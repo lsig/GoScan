@@ -9,20 +9,15 @@ import (
 
 func main() {
 	// Define the port flag
-	var ports string
-	flag.StringVar(&ports, "p", "", "Optional: List of ports separated by commas")
-
-	// Parse the flags
+	portsPtr := flag.String("p", "", "Optional: List of ports separated by commas")
+	// Parse flag
 	flag.Parse()
 
-	var portList []string
-	if ports != "" {
-		// Split the ports into a slice if provided
-		portList = strings.Split(ports, ",")
-	}
+	portList := strings.Split(*portsPtr, ",")
 
 	// Remaining arguments are the IP addresses
 	ipAddresses := flag.Args()
+
 	if len(ipAddresses) == 0 {
 		fmt.Println("No IP addresses provided.")
 		os.Exit(1)
