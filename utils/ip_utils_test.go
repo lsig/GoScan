@@ -7,6 +7,56 @@ import (
 	"testing"
 )
 
+func TestConvertArgsToIPs(t *testing.T) {
+	tests := []struct {
+		name     string
+		args     []string
+		expected []net.IP
+	}{
+		{
+			name:     "Single IPv4",
+			args:     []string{"192.0.2.1"},
+			expected: []net.IP{net.ParseIP("192.0.2.1").To4()},
+		},
+		{
+			name: "Test",
+			args: []string{"192.168.1.248/29", "1.1.1.1", "mbl.is", "ble124545.is"},
+			expected: []net.IP{
+				net.ParseIP("192.168.1.249").To4(),
+				net.ParseIP("192.168.1.250").To4(),
+				net.ParseIP("192.168.1.251").To4(),
+				net.ParseIP("192.168.1.252").To4(),
+				net.ParseIP("192.168.1.253").To4(),
+				net.ParseIP("192.168.1.254").To4(),
+				net.ParseIP("1.1.1.1").To4(),
+				net.ParseIP("92.43.192.120").To4(),
+			},
+		},
+		{
+			name:     "Empty",
+			args:     []string{""},
+			expected: []net.IP{},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			actual := ConvertArgsToIPs(test.args)
+
+			sort.Slice(test.expected, func(i, j int) bool {
+				return test.expected[i].String() < test.expected[j].String()
+			})
+			sort.Slice(actual, func(i, j int) bool {
+				return actual[i].String() < actual[j].String()
+			})
+
+			if !reflect.DeepEqual(actual, test.expected) {
+				t.Errorf("ConvertArgsToIPs(%v) = %v, want %v", test.args, actual, test.expected)
+			}
+		})
+	}
+}
+
 func TestResolveHost(t *testing.T) {
 	tests := map[string]struct {
 		hostname string
@@ -43,7 +93,7 @@ func TestResolveHost(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			actual, _ := ResolveHost(test.hostname)
+			actual, _ := resolveHost(test.hostname)
 
 			// Sort both slices by IP string representation
 			sort.Slice(test.expected, func(i, j int) bool {
@@ -82,7 +132,7 @@ func TestConvertToIp(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			actual, _ := ConvertToIP(test.ipStr)
+			actual, _ := convertToIP(test.ipStr)
 
 			if !reflect.DeepEqual(actual, test.expected) {
 				t.Errorf("IP conversion does not match: expected %v, got %v", test.expected, actual)
@@ -121,7 +171,7 @@ func TestConvertSubnetToIPs(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			actual, _ := ConvertSubnetToIPs(test.subnet)
+			actual, _ := convertSubnetToIPs(test.subnet)
 
 			if !reflect.DeepEqual(actual, test.expected) {
 				t.Errorf("IP conversion does not match: expected %v, got %v", test.expected, actual)
@@ -157,7 +207,7 @@ func TestIsValidHostname(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			actual := IsValidHostname(test.hostname)
+			actual := isValidHostname(test.hostname)
 
 			if actual != test.expected {
 				t.Errorf("Validation does not work: expected %v, got %v", test.expected, actual)
@@ -188,7 +238,7 @@ func TestIsValidIPv4(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			actual := IsValidIPv4(test.ip)
+			actual := isValidIPv4(test.ip)
 
 			if actual != test.expected {
 				t.Errorf("Validation does not work: expected %v, got %v", test.expected, actual)
@@ -219,7 +269,7 @@ func TestIsValidCIDR(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			actual := IsValidCIDR(test.cidr)
+			actual := isValidCIDR(test.cidr)
 
 			if actual != test.expected {
 				t.Errorf("Validation does not work: expected %v, got %v", test.expected, actual)

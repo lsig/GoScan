@@ -2,11 +2,41 @@ package utils
 
 import (
 	"errors"
+	"fmt"
 	"net"
+	"os"
 	"regexp"
 )
 
-func ResolveHost(hostname string) ([]net.IP, error) {
+func ConvertArgsToIPs(args []string) []net.IP {
+	ips := []net.IP{}
+
+	for _, ip := range args {
+		switch {
+		case isValidIPv4(ip):
+			newIPs, _ := convertToIP(ip)
+			ips = append(ips, newIPs...)
+		case isValidCIDR(ip):
+			newIPs, _ := convertSubnetToIPs(ip)
+			ips = append(ips, newIPs...)
+		case isValidHostname(ip):
+			newIPs, err := resolveHost(ip)
+
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "%s\n", err)
+				continue
+			}
+
+			ips = append(ips, newIPs...)
+		default:
+			err := fmt.Errorf("IP or Hostname incorrectly formatted: %v", ip)
+			fmt.Fprintf(os.Stderr, "%s\n", err)
+		}
+	}
+	return ips
+}
+
+func resolveHost(hostname string) ([]net.IP, error) {
 	ips, err := net.LookupIP(hostname)
 
 	if err != nil {
@@ -23,7 +53,7 @@ func ResolveHost(hostname string) ([]net.IP, error) {
 	return ipv4Addresses, nil
 }
 
-func ConvertToIP(ipStr string) ([]net.IP, error) {
+func convertToIP(ipStr string) ([]net.IP, error) {
 	ip := net.ParseIP(ipStr).To4()
 
 	if ip == nil {
@@ -33,7 +63,7 @@ func ConvertToIP(ipStr string) ([]net.IP, error) {
 	return []net.IP{ip}, nil
 }
 
-func ConvertSubnetToIPs(subnet string) ([]net.IP, error) {
+func convertSubnetToIPs(subnet string) ([]net.IP, error) {
 	ip, ipnet, err := net.ParseCIDR(subnet)
 
 	if err != nil {
@@ -71,18 +101,18 @@ func nextIP(ip net.IP, inc uint) net.IP {
 	return net.IPv4(v0, v1, v2, v3)
 }
 
-func IsValidHostname(hostname string) bool {
+func isValidHostname(hostname string) bool {
 	// Pattern for matching a valid hostname (RFC 1123)
 	hostnamePattern := regexp.MustCompile(`^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.?([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])$`)
 	return hostnamePattern.MatchString(hostname) && len(hostname) <= 253
 }
 
-func IsValidIPv4(ip string) bool {
+func isValidIPv4(ip string) bool {
 	ipv4 := net.ParseIP(ip).To4()
 	return ipv4 != nil
 }
 
-func IsValidCIDR(cidr string) bool {
+func isValidCIDR(cidr string) bool {
 	ip, _, err := net.ParseCIDR(cidr)
 	ipv4 := ip.To4()
 	return err == nil && ipv4 != nil
