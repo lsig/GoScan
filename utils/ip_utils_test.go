@@ -64,11 +64,11 @@ func TestResolveHost(t *testing.T) {
 func TestConvertToIp(t *testing.T) {
 	tests := map[string]struct {
 		ipStr    string
-		expected net.IP
+		expected []net.IP
 	}{
 		"1.1.1.1": {
 			ipStr:    "1.1.1.1",
-			expected: net.ParseIP("1.1.1.1").To4(),
+			expected: []net.IP{net.ParseIP("1.1.1.1").To4()},
 		},
 		"ble": {
 			ipStr:    "ble",
@@ -130,4 +130,101 @@ func TestConvertSubnetToIPs(t *testing.T) {
 		})
 	}
 
+}
+
+func TestIsValidHostname(t *testing.T) {
+	tests := map[string]struct {
+		hostname string
+		expected bool
+	}{
+		"ruv.is": {
+			hostname: "ruv.is",
+			expected: true,
+		},
+		"y8.com": {
+			hostname: "y8.com",
+			expected: true,
+		},
+		"1.1.1.1": {
+			hostname: "1.1.1.1",
+			expected: false,
+		},
+		"2606:4700:10::ac43:de2": {
+			hostname: "2606:4700:10::ac43:de2",
+			expected: false,
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			actual := IsValidHostname(test.hostname)
+
+			if actual != test.expected {
+				t.Errorf("Validation does not work: expected %v, got %v", test.expected, actual)
+				t.Errorf("IP conversion does not match: expected %v, got host %v", test.expected, test.hostname)
+			}
+		})
+	}
+}
+
+func TestIsValidIPv4(t *testing.T) {
+	tests := map[string]struct {
+		ip       string
+		expected bool
+	}{
+		"1.1.1.1": {
+			ip:       "1.1.1.1",
+			expected: true,
+		},
+		"y8.com": {
+			ip:       "y8.com",
+			expected: false,
+		},
+		"2606:4700:10::ac43:de2": {
+			ip:       "2606:4700:10::ac43:de2",
+			expected: false,
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			actual := IsValidIPv4(test.ip)
+
+			if actual != test.expected {
+				t.Errorf("Validation does not work: expected %v, got %v", test.expected, actual)
+				t.Errorf("IP conversion does not match: expected %v, got ip %v", test.expected, test.ip)
+			}
+		})
+	}
+}
+
+func TestIsValidCIDR(t *testing.T) {
+	tests := map[string]struct {
+		cidr     string
+		expected bool
+	}{
+		"1.1.1.1/24": {
+			cidr:     "1.1.1.1/24",
+			expected: true,
+		},
+		"y8.com": {
+			cidr:     "y8.com",
+			expected: false,
+		},
+		"2606:4700:10::ac43:de2/28": {
+			cidr:     "2606:4700:10::ac43:de2/28",
+			expected: false,
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			actual := IsValidCIDR(test.cidr)
+
+			if actual != test.expected {
+				t.Errorf("Validation does not work: expected %v, got %v", test.expected, actual)
+				t.Errorf("IP conversion does not match: expected %v, got CIDR %v", test.expected, test.cidr)
+			}
+		})
+	}
 }
