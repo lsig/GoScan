@@ -22,8 +22,7 @@ func ConvertFlagToPorts(ports []string) []string {
 			portRange := convertRangeToPorts(port)
 			validPorts = append(validPorts, portRange...)
 
-		}
-		if validatePort(port) {
+		} else if validatePort(port) {
 			validPorts = append(validPorts, port)
 		}
 	}
