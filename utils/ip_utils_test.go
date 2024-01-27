@@ -257,6 +257,10 @@ func TestIsValidCIDR(t *testing.T) {
 			cidr:     "1.1.1.1/24",
 			expected: true,
 		},
+		"1.1.1.1": {
+			cidr:     "1.1.1.1",
+			expected: false,
+		},
 		"y8.com": {
 			cidr:     "y8.com",
 			expected: false,

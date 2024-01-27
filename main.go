@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/lsig/PortScanner/port"
+	"github.com/lsig/PortScanner/utils"
 )
 
 func main() {
@@ -23,7 +26,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Process the input
-	fmt.Println("Ports:", portList)
-	fmt.Println("IP Addresses:", ipAddresses)
+	ips := utils.ConvertArgsToIPs(ipAddresses)
+	ports := utils.ConvertFlagToPorts(portList)
+
+	for _, ip := range ips {
+		for _, po := range ports {
+			port.ScanPort(ip, po)
+		}
+	}
 }
