@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func ScanPort(ipAddr net.IP, port string) {
+func Scan(ipAddr net.IP, port string) {
 	address := net.JoinHostPort(ipAddr.String(), port)
 	dialer := net.Dialer{Timeout: 2 * time.Second} // Set a timeout
 	conn, err := dialer.Dial("tcp", address)
@@ -28,7 +28,5 @@ func ScanPort(ipAddr net.IP, port string) {
 		conn.Close()
 	} else if strings.Contains(err.Error(), "connection refused") {
 		fmt.Printf("%s closed\n", address)
-	} else {
-		fmt.Printf("%s", err.Error())
 	}
 }

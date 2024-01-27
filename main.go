@@ -3,12 +3,16 @@ package main
 import (
 	"flag"
 	"fmt"
+	"net"
 	"os"
 	"strings"
+	"sync"
 
 	"github.com/lsig/PortScanner/port"
 	"github.com/lsig/PortScanner/utils"
 )
+
+const maxGoroutines = 10000
 
 func main() {
 	// Define the port flag
@@ -29,9 +33,22 @@ func main() {
 	ips := utils.ConvertArgsToIPs(ipAddresses)
 	ports := utils.ConvertFlagToPorts(portList)
 
+	var wg sync.WaitGroup
+	sem := make(chan struct{}, maxGoroutines)
+
 	for _, ip := range ips {
 		for _, po := range ports {
-			port.ScanPort(ip, po)
+			wg.Add(1)
+			go func(host net.IP, portno string) {
+				defer wg.Done()
+				sem <- struct{}{} // aquire semaphore
+				port.Scan(host, portno)
+				<-sem // release semaphore
+
+			}(ip, po)
 		}
 	}
+
+	wg.Wait()
+	fmt.Println("Scanning complete.")
 }
