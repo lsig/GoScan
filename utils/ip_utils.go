@@ -8,6 +8,9 @@ import (
 	"regexp"
 )
 
+// Converts Arguments (hostnames, IP addresses and CIDR subnets) to a list of valid IP address
+//
+// If args contains an invalid hostname, IP or subnet it will be omitted and an error will be printed to stderr
 func ConvertArgsToIPs(args []string) []net.IP {
 	ips := []net.IP{}
 
@@ -36,6 +39,11 @@ func ConvertArgsToIPs(args []string) []net.IP {
 	return ips
 }
 
+// Converts hostname to the related IPv4 addresses of the host
+//
+// # Example
+//
+// "mbl.is" converts to []net.IP{"92.43.192.120"}
 func resolveHost(hostname string) ([]net.IP, error) {
 	ips, err := net.LookupIP(hostname)
 
@@ -53,6 +61,7 @@ func resolveHost(hostname string) ([]net.IP, error) {
 	return ipv4Addresses, nil
 }
 
+// Converts an IP string to a valid IPv4 address
 func convertToIP(ipStr string) ([]net.IP, error) {
 	ip := net.ParseIP(ipStr).To4()
 
@@ -63,6 +72,7 @@ func convertToIP(ipStr string) ([]net.IP, error) {
 	return []net.IP{ip}, nil
 }
 
+// Converts a CIDR to a slice of valid IPv4 addresses in the subnet
 func convertSubnetToIPs(subnet string) ([]net.IP, error) {
 	ip, ipnet, err := net.ParseCIDR(subnet)
 
@@ -89,6 +99,8 @@ func convertSubnetToIPs(subnet string) ([]net.IP, error) {
 
 }
 
+// Finds the next IPv4 after a specified IPv4 address
+//
 // https://stackoverflow.com/questions/31191313/how-to-get-the-next-ip-address
 func nextIP(ip net.IP, inc uint) net.IP {
 	i := ip.To4()
@@ -101,17 +113,21 @@ func nextIP(ip net.IP, inc uint) net.IP {
 	return net.IPv4(v0, v1, v2, v3)
 }
 
+// Checks if a hostname is of a valid format
 func isValidHostname(hostname string) bool {
 	// Pattern for matching a valid hostname (RFC 1123)
+	// ChatGPT suggested this and tests in ip_utils_test.go confirm functionality
 	hostnamePattern := regexp.MustCompile(`^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.?([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])$`)
 	return hostnamePattern.MatchString(hostname) && len(hostname) <= 253
 }
 
+// Checks if a string represents a valid IPv4 address
 func isValidIPv4(ip string) bool {
 	ipv4 := net.ParseIP(ip).To4()
 	return ipv4 != nil
 }
 
+// Checks if a string represents a valid IPv4 subnet
 func isValidCIDR(cidr string) bool {
 	ip, _, err := net.ParseCIDR(cidr)
 	ipv4 := ip.To4()

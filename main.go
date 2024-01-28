@@ -12,6 +12,7 @@ import (
 	"github.com/lsig/PortScanner/utils"
 )
 
+// https://stackoverflow.com/questions/8509152/max-number-of-goroutines
 const maxGoroutines = 10000
 
 func main() {
@@ -34,11 +35,13 @@ func main() {
 	ports := utils.ConvertFlagToPorts(portList)
 
 	var wg sync.WaitGroup
+	// https://levelup.gitconnected.com/go-concurrency-pattern-semaphore-9587d45f058d
 	sem := make(chan struct{}, maxGoroutines)
 
 	for _, ip := range ips {
 		for _, po := range ports {
 			wg.Add(1)
+			// Scan port concurrently
 			go func(host net.IP, portno string) {
 				defer wg.Done()
 				sem <- struct{}{} // aquire semaphore

@@ -7,6 +7,9 @@ import (
 	"time"
 )
 
+// Scans TCP Port of a specified host
+//
+// If no packet is sent from the host within 2 seconds the connection times out
 func Scan(ipAddr net.IP, port string) {
 	address := net.JoinHostPort(ipAddr.String(), port)
 	dialer := net.Dialer{Timeout: 2 * time.Second} // Set a timeout
@@ -14,17 +17,6 @@ func Scan(ipAddr net.IP, port string) {
 
 	if err == nil {
 		fmt.Printf("%s open\n", address)
-
-		if err != nil {
-			fmt.Println("Error setting timeout", err)
-		}
-
-		_, err = conn.Write([]byte("71"))
-
-		if err != nil {
-			fmt.Printf("Port %s did not allowe the probe\n", port)
-		}
-
 		conn.Close()
 	} else if strings.Contains(err.Error(), "connection refused") {
 		fmt.Printf("%s closed\n", address)

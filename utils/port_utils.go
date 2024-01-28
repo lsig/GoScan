@@ -7,9 +7,19 @@ import (
 	"strings"
 )
 
+// Convert parameters of the -p flag to valid ports
+//
+// # Takes in a , seperated slice of strings
+//
+// Supported formats:
+//
+// Numbers: 12,13,14
+//
+// Ranges: 12-15 (converts to 12,13,14,15)
 func ConvertFlagToPorts(ports []string) []string {
 	validPorts := []string{}
 
+	// If port numbers are not specified scan all ports
 	if len(ports) == 1 && ports[0] == "" {
 		for i := 1; i <= 65535; i++ {
 			validPorts = append(validPorts, strconv.Itoa(i))
@@ -30,6 +40,7 @@ func ConvertFlagToPorts(ports []string) []string {
 	return validPorts
 }
 
+// Validates that a string represents a valid port number
 func validatePort(portStr string) bool {
 	port, err := strconv.Atoi(portStr)
 	if err != nil {
@@ -45,6 +56,11 @@ func validatePort(portStr string) bool {
 	return true
 }
 
+// Takes in a range of ports of the format "22-25" and converts it to a a slice of strings
+//
+// # Example:
+//
+// "22-25" converts to []string{"22","23","24","25"}
 func convertRangeToPorts(rangeStr string) []string {
 	parts := strings.Split(rangeStr, "-")
 	result := []string{}
