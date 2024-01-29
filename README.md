@@ -15,6 +15,10 @@ go build .
 
 `PortScanner [OPTIONS] IP_ADDRESS1 [IP_ADDRESS2 ...]`
 
+OR
+
+`go run scanner.go [OPTIONS] IP_ADDRESS1 [IP_ADDRESS2 ...]`
+
 ## Options
 
 - `-p PORTS`
