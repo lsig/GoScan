@@ -13,7 +13,7 @@ import (
 )
 
 // https://stackoverflow.com/questions/8509152/max-number-of-goroutines
-const maxGoroutines = 5000
+const maxGoroutines = 1000
 
 func main() {
 	// Define the port flag
