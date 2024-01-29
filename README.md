@@ -2,6 +2,15 @@
 
 Concurrently scan IP addresses for open ports
 
+## Setup
+
+To use the PortScanner, you must have `go 1.21` installed on your device.
+Then, build the executable in the project directory:
+
+```bash
+go build .
+```
+
 ## Usage
 
 `PortScanner [OPTIONS] IP_ADDRESS1 [IP_ADDRESS2 ...]`
@@ -46,4 +55,12 @@ PortScanner 192.168.1.1 10.0.0.1 172.16.0.1 -p 22,80-88,443
 
 ```
 PortScanner ru.is hi.is -p 22,80-88,443
+```
+
+## Testing
+
+Utility functions within this program are thoroughly tested to ensure robustness and reliability of the program. To run the tests:
+
+```bash
+go test ./...
 ```
