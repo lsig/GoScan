@@ -67,6 +67,16 @@ PortScanner ru.is hi.is -p 22,80-88,443
 PortScanner 192.168.1.1/24 -p 80
 ```
 
+## Output
+
+`host:port [open | closed]?`
+
+If a port for a host accepts the connection, `host:port open` is printed.
+
+Else, if a port for a host refuses the connection, but responds, `host:port closed` is printed.
+
+Else, the port did not respond, likely because of a timeout, nothing is printed.
+
 ## Testing
 
 Utility functions within this program are thoroughly tested to ensure robustness and reliability of the program. To run the tests:
