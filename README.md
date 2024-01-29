@@ -27,7 +27,7 @@ OR
 ## Arguments
 
 - `IP_ADDRESS`
-  The IP address(es) to scan. PortScanner accepts an unlimited number of IP addresses as arguments. Each IP address should be separated by space. IP Addresses can be in the form of actual addresses ([0-255].[0-255].[0-255].[0-255]) or as a domain name (ru.is).
+  The IP address(es) to scan. PortScanner accepts an unlimited number of IP addresses as arguments. Each IP address should be separated by space. IP Addresses can be in the form of actual addresses ([0-255].[0-255].[0-255].[0-255]), A [CIDR](https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing), (10.0.0.0/24) or as a domain name (ru.is).
 
 ## Examples
 
@@ -59,6 +59,12 @@ PortScanner 192.168.1.1 10.0.0.1 172.16.0.1 -p 22,80-88,443
 
 ```
 PortScanner ru.is hi.is -p 22,80-88,443
+```
+
+6. Scan a CIDR for a specific port:
+
+```
+PortScanner 192.168.1.1/24 -p 80
 ```
 
 ## Testing
