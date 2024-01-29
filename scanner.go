@@ -13,7 +13,7 @@ import (
 )
 
 // https://stackoverflow.com/questions/8509152/max-number-of-goroutines
-const maxGoroutines = 10000
+const maxGoroutines = 5000
 
 func main() {
 	// Define the port flag
@@ -41,10 +41,11 @@ func main() {
 	for _, ip := range ips {
 		for _, po := range ports {
 			wg.Add(1)
+			sem <- struct{}{} // aquire semaphore
+
 			// Scan port concurrently
 			go func(host net.IP, portno string) {
 				defer wg.Done()
-				sem <- struct{}{} // aquire semaphore
 				port.Scan(host, portno)
 				<-sem // release semaphore
 
@@ -53,5 +54,8 @@ func main() {
 	}
 
 	wg.Wait()
+
+	close(sem)
+
 	fmt.Println("Scanning complete.")
 }
