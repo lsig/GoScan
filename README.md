@@ -40,31 +40,31 @@ PortScanner 192.168.1.1
 2. Scan multiple IP addresses on specific ports:
 
 ```
-PortScanner 192.168.1.1 10.0.0.1 -p 22,80,443
+PortScanner -p 22,80,443 192.168.1.1 10.0.0.1 
 ```
 
 3. Scan a single IP address on a range of ports:
 
 ```
-PortScanner 192.168.1.1 -p 100-200
+PortScanner -p 100-200 192.168.1.1 
 ```
 
 4. Scan multiple IP addresses on a combination of specific ports and port ranges:
 
 ```
-PortScanner 192.168.1.1 10.0.0.1 172.16.0.1 -p 22,80-88,443
+PortScanner -p 22,80-88,443 192.168.1.1 10.0.0.1 172.16.0.1 
 ```
 
 5. Scan IP addresses from domains:
 
 ```
-PortScanner ru.is hi.is -p 22,80-88,443
+PortScanner -p 22,80-88,443 ru.is hi.is 
 ```
 
 6. Scan a CIDR for a specific port:
 
 ```
-PortScanner 192.168.1.1/24 -p 80
+PortScanner -p 80 192.168.1.1/24 
 ```
 
 ## Output
