@@ -77,12 +77,10 @@ func TestResolveHost(t *testing.T) {
 				net.ParseIP("185.21.17.249").To4(),
 			},
 		},
-		"ruv.is": {
-			hostname: "ruv.is",
+		"linkedin.com": {
+			hostname: "linkedin.com",
 			expected: []net.IP{
-				net.ParseIP("172.67.13.226").To4(),
-				net.ParseIP("104.22.74.251").To4(),
-				net.ParseIP("104.22.75.251").To4(),
+				net.ParseIP("13.107.42.14").To4(),
 			},
 		},
 		"ble": {
